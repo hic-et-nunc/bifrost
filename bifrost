@@ -1,0 +1,5 @@
+#!/usr/bin/env node
+
+const command  = require("./command/" + process.argv[2]);
+
+command(process.stdout);
