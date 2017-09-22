@@ -1,5 +1,28 @@
 #!/usr/bin/env node
 
-const command  = require("./command/" + process.argv[2]);
+const fs = require('fs');
+const path = require('path');
 
-command(process.stdout);
+let stdout = process.stdout;
+let commandPath = path.join(__dirname, "command", process.argv[2] + '.js');
+
+fs.exists(commandPath, (exists) => {
+    if (exists) {
+        return require(commandPath)(stdout);
+    }
+
+    stdout.write(`Unable to locate command: ${process.argv[2]}\n\n`);
+
+    fs.readdir(path.dirname(commandPath), function(err, items) {
+        if (err) {
+            return stdout.write("Unable to list commands\n");
+        }
+
+        items
+            .filter((item) => path.extname(item) == '.js' ? true : false)
+            .map((item) => path.basename(item, '.js'))
+            .map((item) => stdout.write(`  * ${item}\n`));
+
+        stdout.write("\nUse per command `--help` for more information\n");
+    });
+});
