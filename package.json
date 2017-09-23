@@ -9,6 +9,7 @@
   "author": "Walter Dal Mut <walter.dalmut@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "abbrev": "^1.1.0",
     "commander": "^2.11.0",
     "q": "^1.5.0",
     "request": "^2.82.0",

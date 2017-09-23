@@ -2,25 +2,30 @@
 
 const fs = require('fs');
 const path = require('path');
+const abbrev = require('abbrev');
 
-let stdout = process.stdout;
-let commandPath = path.join(__dirname, "command", process.argv[2] + '.js');
+const stdout = process.stdout;
 
-fs.exists(commandPath, (exists) => {
-    if (exists) {
-        return require(commandPath)(stdout);
+fs.readdir(path.join(__dirname, "/command"), function(err, items) {
+    if (err) {
+        return stdout.write("Unable to list commands\n");
     }
 
-    stdout.write(`Unable to locate command: ${process.argv[2]}\n\n`);
+    let commands = items
+        .filter((item) => path.extname(item) == '.js' ? true : false)
+        .map((item) => path.basename(item, '.js'))
 
-    fs.readdir(path.dirname(commandPath), function(err, items) {
-        if (err) {
-            return stdout.write("Unable to list commands\n");
+    let command = abbrev.apply(abbrev, commands)[process.argv[2]];
+    let commandPath = path.join(__dirname, "command", command + '.js');
+
+    fs.exists(commandPath, (exists) => {
+        if (exists) {
+            return require(commandPath)(stdout);
         }
 
-        items
-            .filter((item) => path.extname(item) == '.js' ? true : false)
-            .map((item) => path.basename(item, '.js'))
+        stdout.write(`Unable to locate command: ${process.argv[2]}\n\n`);
+
+        commands
             .map((item) => stdout.write(`  * ${item}\n`));
 
         stdout.write("\nUse per command `--help` for more information\n");
