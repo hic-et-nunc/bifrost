@@ -11,11 +11,16 @@ module.exports = function(stdout) {
     .option('-H, --host [value]', 'Unix Socket', 'unix:/var/run/bifrostd/bifrostd.sock')
     .parse(args);
 
-  request(`http://${program.host}:/path`).then((res) => {
-    JSON.parse(res).map((path) => {
+  request({
+    method: "GET",
+    uri: `http://${program.host}:/path`,
+    json: true
+  }).then((res) => {
+    res.map((path) => {
       stdout.write(path + "\n");
     });
-  }).fail((err) => {
+  })
+  .fail((err) => {
     stdout.write(`${err}\n`);
   });
 };

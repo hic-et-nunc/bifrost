@@ -13,11 +13,15 @@ module.exports = function(stdout) {
 
   args.slice(2).map((arg) => {
     arg = encodeURI(arg);
-    request(`http://${program.host}:/path/${arg}`)
-      .then((res) => {
-        stdout.write(JSON.stringify(JSON.parse(res), null, 4));
-        stdout.write("\n");
-    }).fail((err) => {
+    request({
+      uri: `http://${program.host}:/path/${arg}`,
+      method: "GET",
+      json: true,
+    }).then((res) => {
+      stdout.write(JSON.stringify(res, null, 4));
+      stdout.write("\n");
+    })
+    .fail((err) => {
       stdout.write(`${err}\n`);
     });
   });
