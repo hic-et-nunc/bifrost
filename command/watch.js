@@ -6,12 +6,13 @@ const request = require('request-promise-any');
 module.exports = function(stdout) {
   let args = [].concat(process.argv.slice(0,1), process.argv.slice(2));
 
-  let watchPath = undefined;
+  let watchPath = null;
 
   program
     .version('0.1.0')
     .option('-H, --host [value]', 'Unix Socket', 'unix:/var/run/bifrostd/bifrostd.sock')
-    .option('-n, --namespace <value>', 'Namespace', 'tmp')
+    .option('-N, --namespace <value>', 'Set a remote namespace', 'tmp')
+    .option('-n, --notify', 'Enable notification', false)
     .arguments('<path>')
     .action((path) => {
       watchPath = path;
@@ -28,7 +29,8 @@ module.exports = function(stdout) {
     uri: `http://${program.host}:/watch`,
     body: Object.assign({}, {
       path: watchPath,
-      namespace: program.namespace
+      namespace: program.namespace,
+      notify: program.notify,
     }),
     json: true
   }).then((res) => {
