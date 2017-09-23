@@ -22,5 +22,6 @@ module.exports = function(stdout) {
   })
   .fail((err) => {
     stdout.write(`${err}\n`);
+    process.exit(1);
   });
 };

@@ -34,6 +34,9 @@ module.exports = function(stdout) {
   }).then((res) => {
     stdout.write(JSON.stringify(res, null, 4));
     stdout.write("\n");
+  }).fail((err) => {
+    stdout.write(`${err}\n`);
+    process.exit(1);
   });
 };
 
