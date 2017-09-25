@@ -3,9 +3,7 @@ require('any-promise/register/q');
 const program = require('commander');
 const request = require('request-promise-any');
 
-module.exports = function(stdout) {
-  let args = [].concat(process.argv.slice(0,1), process.argv.slice(2));
-
+module.exports = function(args, stdin, stdout) {
   let watchPath = null;
 
   program

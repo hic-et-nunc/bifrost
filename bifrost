@@ -4,7 +4,9 @@ const fs = require('fs');
 const path = require('path');
 const abbrev = require('abbrev');
 
+const stdin = process.stdin;
 const stdout = process.stdout;
+const argv = process.argv;
 
 fs.readdir(path.join(__dirname, "/command"), function(err, items) {
     if (err) {
@@ -13,17 +15,18 @@ fs.readdir(path.join(__dirname, "/command"), function(err, items) {
 
     let commands = items
         .filter((item) => path.extname(item) == '.js' ? true : false)
-        .map((item) => path.basename(item, '.js'))
+        .map((item) => path.basename(item, '.js'));
 
-    let command = abbrev.apply(abbrev, commands)[process.argv[2]];
+    let command = abbrev.apply(abbrev, commands)[argv[2]];
     let commandPath = path.join(__dirname, "command", command + '.js');
 
     fs.exists(commandPath, (exists) => {
         if (exists) {
-            return require(commandPath)(stdout);
+            let args = [].concat(argv.slice(0,1), argv.slice(2));
+            return require(commandPath)(args, stdin, stdout);
         }
 
-        stdout.write(`Unable to locate command: ${process.argv[2]}\n\n`);
+        stdout.write(`Unable to locate command: ${argv[2]}\n\n`);
 
         commands
             .map((item) => stdout.write(`  * ${item}\n`));
